@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 6 Math Escape Room - Expanded Edition</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas-Confetti for celebration -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        /* Custom styles for a fun, school-like feel */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+        }
+        .puzzle-card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+        }
+        .puzzle-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .puzzle-content {
+            flex-grow: 1;
+        }
+        .btn-primary {
+            background-color: #3b82f6; /* Blue-500 */
+            color: white;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb; /* Blue-600 */
+        }
+        .btn-primary:disabled {
+            background-color: #9ca3af; /* Gray-400 */
+            cursor: not-allowed;
+        }
+        .code-digit {
+            border: 2px dashed #d1d5db; /* Gray-300 */
+            font-weight: 700;
+            color: #1f2937; /* Gray-800 */
+        }
+        .feedback-correct {
+            color: #16a34a; /* Green-600 */
+        }
+        .feedback-incorrect {
+            color: #dc2626; /* Red-600 */
+        }
+        /* Style for the final success modal */
+        #success-modal {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-50"></canvas>
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <!-- Header Section -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-2">Grade 6 Math Escape Room</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">Welcome! Solve the ten Grade 5 review challenges to unlock the secret code!</p>
+        </header>
+
+        <!-- Puzzles Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+
+            <!-- Puzzle 1: BEDMAS -->
+            <div class="puzzle-card p-6">
+                <div class="puzzle-content">
+                    <h2 class="text-2xl font-bold mb-4">🔢 Puzzle #1: Order of Operations</h2>
+                    <p class="mb-4 text-gray-600">Solve the equation below, remembering BEDMAS!</p>
+                    <p class="font-semibold text-xl mb-4 text-center text-blue-600 bg-gray-50 p-4 rounded-lg">`(8 x 4) - (15 ÷ 3) + 1 = ?`</p>
+                    <p class="text-center text-gray-600">The code digit is the digit in the **tens** place of your answer.</p>
+                </div>
+                <div class="mt-4">
+                    <div class="flex gap-2">
+                        <input id="p1-answer" type="number" placeholder="Answer" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <button id="p1-btn" class="btn-primary font-semibold py-3 px-6 rounded-lg">Check</button>
+                    </div>
+                    <p id="p1-feedback" class="mt-2 text-center font-semibold h-6"></p>
+                </div>
+            </div>
+
+            <!-- Puzzle 2: Area -->
+            <div class="puzzle-card p-6">
+                 <div class="puzzle-content">
+                    <h2 class="text-2xl font-bold mb-4">📏 Puzzle #2: Classroom Area</h2>
+                    <p class="mb-4 text-gray-600">A new classroom is 9 metres long and 7 metres wide. What is its area in square metres?</p>
+                    <p class="font-semibold text-xl mb-4 text-center text-blue-600 bg-gray-50 p-4 rounded-lg">Area = Length x Width</p>
+                    <p class="text-center text-gray-600">The code digit is the digit in the **ones** place of your answer.</p>
+                </div>
+                <div class="mt-4">
+                    <div class="flex gap-2">
+                        <input id="p2-answer" type="number" placeholder="Area (m²)" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <button id="p2-btn" class="btn-primary font-semibold py-3 px-6 rounded-lg">Check</button>
+                    </div>
+                    <p id="p2-feedback" class="mt-2 text-center font-semibold h-6"></p>
+                </div>
+            </div>
+
+            <!-- Puzzle 3: Fractions -->
+            <div class="puzzle-card p-6">
+                 <div class="puzzle-content">
+                    <h2 class="text-2xl font-bold mb-4">🍕 Puzzle #3: Fraction Face-Off</h2>
+                    <p class="mb-4 text-gray-600">Four friends are sharing pizzas. Who has the largest slice? Find the largest fraction below.</p>
+                    <p class="font-semibold text-xl mb-4 text-center text-blue-600 bg-gray-50 p-4 rounded-lg">1/2, 3/8, 5/16, 3/4</p>
+                    <p class="text-center text-gray-600">The code digit is the **denominator** of the largest fraction.</p>
+                </div>
+                <div class="mt-4">
+                    <div class="flex gap-2">
+                        <input id="p3-answer" type="text" placeholder="e.g., 1/2" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <button id="p3-btn" class="btn-primary font-semibold py-3 px-6 rounded-lg">Check</button>
+                    </div>
+                    <p id="p3-feedback" class="mt-2 text-center font-semibold h-6"></p>
+                </div>
+            </div>
+
+            <!-- Puzzle 4: Decimals -->
+            <div class="puzzle-card p-6">
+                 <div class="puzzle-content">
+                    <h2 class="text-2xl font-bold mb-4">⚖️ Puzzle #4: Decimal Race</h2>
+                    <p class="mb-4 text-gray-600">Order these race times (in seconds) from least to greatest: <br><strong>0.5, 0.09, 0.9, 0.15</strong></p>
+                    <p class="text-center text-gray-600">The code digit is the digit in the **hundredths** place of the **second** fastest time.</p>
+                </div>
+                <div class="mt-4">
+                    <div class="flex gap-2">
+                        <input id="p4-answer" type="text" placeholder="e.g., 0.01" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <button id="p4-btn" class="btn-primary font-semibold py-3 px-6 rounded-lg">Check</button>
+                    </div>
+                    <p id="p4-feedback" class="mt-2 text-center font-semibold h-6"></p>
+                </div>
+            </div>
+
+            <!-- Puzzle 5: Multiplication -->
+            <div class="puzzle-card p-6">
+                 <div class="puzzle-content">
+                    <h2 class="text-2xl font-bold mb-4">✖️ Puzzle #5: Multiplication Mission</h2>
+                    <p class="mb-4 text-gray-600">A school bought 25 boxes of pencils. Each box has 18 pencils. How many pencils in total?</p>
+                    <p class="font-semibold text-xl mb-4 text-center text-blue-600 bg-gray-50 p-4 rounded-lg">25 x 18 = ?</p>
+                    <p class="text-center text-gray-600">The code digit is the digit in the **hundreds** place of your answer.</p>
+                </div>
+                <div class="mt-4">
+                    <div class="flex gap-2">
+                        <input id="p5-answer" type="number" placeholder="Total pencils" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <button id="p5-btn" class="btn-primary font-semibold py-3 px-6 rounded-lg">Check</button>
+                    </div>
+                    <p id="p5-feedback" class="mt-2 text-center font-semibold h-6"></p>
+                </div>
+            </div>
+
+            <!-- Puzzle 6: Division -->
+            <div class="puzzle-card p-6">
+                 <div class="puzzle-content">
+                    <h2 class="text-2xl font-bold mb-4">➗ Puzzle #6: School Houses</h2>
+                    <p class="mb-4 text-gray-600">A school has 472 students. They are sorted equally into 4 houses. How many students are in each house?</p>
+                    <p class="font-semibold text-xl mb-4 text-center text-blue-600 bg-gray-50 p-4 rounded-lg">472 ÷ 4 = ?</p>
+                    <p class="text-center text-gray-600">The code digit is the digit in the **ones** place of your answer.</p>
+                </div>
+                <div class="mt-4">
+                    <div class="flex gap-2">
+                        <input id="p6-answer" type="number" placeholder="Students per house" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <button id="p6-btn" class="btn-primary font-semibold py-3 px-6 rounded-lg">Check</button>
+                    </div>
+                    <p id="p6-feedback" class="mt-2 text-center font-semibold h-6"></p>
+                </div>
+            </div>
+
+            <!-- Puzzle 7: Measurement -->
+            <div class="puzzle-card p-6">
+                 <div class="puzzle-content">
+                    <h2 class="text-2xl font-bold mb-4">⚽ Puzzle #7: Soccer Field Sprint</h2>
+                    <p class="mb-4 text-gray-600">A soccer field is 100 metres long. How many centimetres is that? (Hint: 1 m = 100 cm)</p>
+                    <p class="font-semibold text-xl mb-4 text-center text-blue-600 bg-gray-50 p-4 rounded-lg">100 metres = ? centimetres</p>
+                    <p class="text-center text-gray-600">The code digit is the **first** digit of your answer.</p>
+                </div>
+                <div class="mt-4">
+                    <div class="flex gap-2">
+                        <input id="p7-answer" type="number" placeholder="Centimetres" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <button id="p7-btn" class="btn-primary font-semibold py-3 px-6 rounded-lg">Check</button>
+                    </div>
+                    <p id="p7-feedback" class="mt-2 text-center font-semibold h-6"></p>
+                </div>
+            </div>
+
+            <!-- Puzzle 8: Geometry -->
+            <div class="puzzle-card p-6">
+                 <div class="puzzle-content">
+                    <h2 class="text-2xl font-bold mb-4">🔺 Puzzle #8: Triangle Teaser</h2>
+                    <p class="mb-4 text-gray-600">A triangle has angles measuring 90°, 45°, and 45°. This makes it both a right triangle and an isosceles triangle.</p>
+                    <p class="font-semibold text-xl mb-4 text-center text-blue-600 bg-gray-50 p-4 rounded-lg">How many equal sides does an isosceles triangle have?</p>
+                    <p class="text-center text-gray-600">Your answer is the code digit.</p>
+                </div>
+                <div class="mt-4">
+                    <div class="flex gap-2">
+                        <input id="p8-answer" type="number" placeholder="Number of equal sides" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <button id="p8-btn" class="btn-primary font-semibold py-3 px-6 rounded-lg">Check</button>
+                    </div>
+                    <p id="p8-feedback" class="mt-2 text-center font-semibold h-6"></p>
+                </div>
+            </div>
+
+            <!-- Puzzle 9: Mean -->
+            <div class="puzzle-card p-6">
+                 <div class="puzzle-content">
+                    <h2 class="text-2xl font-bold mb-4">📊 Puzzle #9: Average Achiever</h2>
+                    <p class="mb-4 text-gray-600">Find the mean (average) of these recent test scores:</p>
+                    <p class="font-semibold text-xl mb-4 text-center text-blue-600 bg-gray-50 p-4 rounded-lg">80, 90, 100, 70</p>
+                    <p class="text-center text-gray-600">The code digit is the digit in the **tens** place of the mean.</p>
+                </div>
+                <div class="mt-4">
+                    <div class="flex gap-2">
+                        <input id="p9-answer" type="number" placeholder="The mean" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <button id="p9-btn" class="btn-primary font-semibold py-3 px-6 rounded-lg">Check</button>
+                    </div>
+                    <p id="p9-feedback" class="mt-2 text-center font-semibold h-6"></p>
+                </div>
+            </div>
+
+            <!-- Puzzle 10: Pattern -->
+            <div class="puzzle-card p-6">
+                 <div class="puzzle-content">
+                    <h2 class="text-2xl font-bold mb-4">🐢 Puzzle #10: Pet Pattern</h2>
+                    <p class="mb-4 text-gray-600">Find the next number in the growing pattern.</p>
+                    <p class="font-semibold text-xl tracking-widest mb-4 text-center text-blue-600 bg-gray-50 p-4 rounded-lg">5, 8, 12, 17, 23, ___</p>
+                    <p class="text-center text-gray-600">The code digit is the digit in the **ones** place of your answer.</p>
+                </div>
+                <div class="mt-4">
+                    <div class="flex gap-2">
+                        <input id="p10-answer" type="number" placeholder="Next number" class="w-full p-3 border border-gray-300 rounded-lg">
+                        <button id="p10-btn" class="btn-primary font-semibold py-3 px-6 rounded-lg">Check</button>
+                    </div>
+                    <p id="p10-feedback" class="mt-2 text-center font-semibold h-6"></p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Final Lock Section -->
+        <div class="bg-white p-6 rounded-2xl shadow-lg text-center">
+            <h2 class="text-3xl font-bold mb-2">The Secret Code Lockbox</h2>
+            <p class="text-gray-600 mb-6">As you solve each puzzle, a digit will appear below. Unlock the box when you have all ten!</p>
+            <div class="flex justify-center flex-wrap gap-2 mb-6">
+                <div id="digit-1" class="code-digit w-12 h-16 text-2xl flex items-center justify-center rounded-lg bg-gray-100">?</div>
+                <div id="digit-2" class="code-digit w-12 h-16 text-2xl flex items-center justify-center rounded-lg bg-gray-100">?</div>
+                <div id="digit-3" class="code-digit w-12 h-16 text-2xl flex items-center justify-center rounded-lg bg-gray-100">?</div>
+                <div id="digit-4" class="code-digit w-12 h-16 text-2xl flex items-center justify-center rounded-lg bg-gray-100">?</div>
+                <div id="digit-5" class="code-digit w-12 h-16 text-2xl flex items-center justify-center rounded-lg bg-gray-100">?</div>
+                <div id="digit-6" class="code-digit w-12 h-16 text-2xl flex items-center justify-center rounded-lg bg-gray-100">?</div>
+                <div id="digit-7" class="code-digit w-12 h-16 text-2xl flex items-center justify-center rounded-lg bg-gray-100">?</div>
+                <div id="digit-8" class="code-digit w-12 h-16 text-2xl flex items-center justify-center rounded-lg bg-gray-100">?</div>
+                <div id="digit-9" class="code-digit w-12 h-16 text-2xl flex items-center justify-center rounded-lg bg-gray-100">?</div>
+                <div id="digit-10" class="code-digit w-12 h-16 text-2xl flex items-center justify-center rounded-lg bg-gray-100">?</div>
+            </div>
+            <button id="unlock-btn" class="w-full max-w-xs mx-auto bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-8 rounded-lg text-xl">
+                Unlock!
+            </button>
+            <p id="unlock-feedback" class="mt-4 font-semibold text-red-600 h-6"></p>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="hidden fixed inset-0 z-40 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 md:p-12 text-center max-w-2xl transform transition-all scale-95 opacity-0">
+            <h2 class="text-4xl md:text-5xl font-bold text-green-600 mb-4">You did it!</h2>
+            <p class="text-2xl md:text-3xl font-semibold text-gray-800 mb-4">You've escaped into Grade 6!</p>
+            <p class="text-lg text-gray-600 mb-6">You solved all ten puzzles and unlocked the secret to a great year.</p>
+            <div class="bg-yellow-100 border-l-4 border-yellow-400 text-yellow-800 p-4 rounded-lg">
+                <p class="text-xl font-bold">The secret is... TEAMWORK!</p>
+            </div>
+            <p class="mt-8 text-lg">Welcome to Grade 6. It's going to be a fantastic year!</p>
+            <button id="close-modal-btn" class="mt-8 btn-primary font-semibold py-3 px-8 rounded-lg text-lg">Hooray!</button>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Puzzle Data ---
+            const solutions = {
+                p1: { answer: 28, digit: 2 },
+                p2: { answer: 63, digit: 3 },
+                p3: { answer: "3/4", digit: 4 },
+                p4: { answer: 0.15, digit: 5 },
+                p5: { answer: 450, digit: 4 },
+                p6: { answer: 118, digit: 8 },
+                p7: { answer: 10000, digit: 1 },
+                p8: { answer: 2, digit: 2 },
+                p9: { answer: 85, digit: 8 },
+                p10: { answer: 30, digit: 0 }
+            };
+            const finalCode = "2345481280";
+
+            // --- DOM Elements ---
+            const puzzles = [
+                { btn: document.getElementById('p1-btn'), input: document.getElementById('p1-answer'), feedback: document.getElementById('p1-feedback'), digitDisplay: document.getElementById('digit-1') },
+                { btn: document.getElementById('p2-btn'), input: document.getElementById('p2-answer'), feedback: document.getElementById('p2-feedback'), digitDisplay: document.getElementById('digit-2') },
+                { btn: document.getElementById('p3-btn'), input: document.getElementById('p3-answer'), feedback: document.getElementById('p3-feedback'), digitDisplay: document.getElementById('digit-3') },
+                { btn: document.getElementById('p4-btn'), input: document.getElementById('p4-answer'), feedback: document.getElementById('p4-feedback'), digitDisplay: document.getElementById('digit-4') },
+                { btn: document.getElementById('p5-btn'), input: document.getElementById('p5-answer'), feedback: document.getElementById('p5-feedback'), digitDisplay: document.getElementById('digit-5') },
+                { btn: document.getElementById('p6-btn'), input: document.getElementById('p6-answer'), feedback: document.getElementById('p6-feedback'), digitDisplay: document.getElementById('digit-6') },
+                { btn: document.getElementById('p7-btn'), input: document.getElementById('p7-answer'), feedback: document.getElementById('p7-feedback'), digitDisplay: document.getElementById('digit-7') },
+                { btn: document.getElementById('p8-btn'), input: document.getElementById('p8-answer'), feedback: document.getElementById('p8-feedback'), digitDisplay: document.getElementById('digit-8') },
+                { btn: document.getElementById('p9-btn'), input: document.getElementById('p9-answer'), feedback: document.getElementById('p9-feedback'), digitDisplay: document.getElementById('digit-9') },
+                { btn: document.getElementById('p10-btn'), input: document.getElementById('p10-answer'), feedback: document.getElementById('p10-feedback'), digitDisplay: document.getElementById('digit-10') }
+            ];
+            
+            const unlockBtn = document.getElementById('unlock-btn');
+            const unlockFeedback = document.getElementById('unlock-feedback');
+            const successModal = document.getElementById('success-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            
+            let revealedDigits = Array(10).fill('');
+
+            // --- Functions ---
+            function checkAnswer(puzzle, solution, digitIndex) {
+                const userAnswer = puzzle.input.value.trim().replace(/\s/g, '');
+                let isCorrect = false;
+
+                if (typeof solution.answer === 'string') {
+                    isCorrect = userAnswer === solution.answer;
+                } else {
+                    isCorrect = parseFloat(userAnswer) === solution.answer;
+                }
+
+                if (isCorrect) {
+                    puzzle.feedback.textContent = 'Correct!';
+                    puzzle.feedback.classList.remove('feedback-incorrect');
+                    puzzle.feedback.classList.add('feedback-correct');
+                    puzzle.input.disabled = true;
+                    puzzle.btn.disabled = true;
+                    puzzle.digitDisplay.textContent = solution.digit;
+                    puzzle.digitDisplay.classList.add('!text-blue-600', '!border-blue-500');
+                    revealedDigits[digitIndex] = solution.digit;
+                } else {
+                    puzzle.feedback.textContent = 'Not quite, try again!';
+                    puzzle.feedback.classList.remove('feedback-correct');
+                    puzzle.feedback.classList.add('feedback-incorrect');
+                    puzzle.input.focus();
+                }
+            }
+            
+            function launchConfetti() {
+                const myConfetti = confetti.create(document.getElementById('confetti-canvas'), { resize: true });
+                myConfetti({ particleCount: 200, spread: 180, origin: { y: 0.6 } });
+            }
+
+            // --- Event Listeners ---
+            puzzles.forEach((puzzle, index) => {
+                const solutionKey = `p${index + 1}`;
+                puzzle.btn.addEventListener('click', () => checkAnswer(puzzle, solutions[solutionKey], index));
+                puzzle.input.addEventListener('keyup', (e) => e.key === 'Enter' && puzzle.btn.click());
+            });
+
+            unlockBtn.addEventListener('click', () => {
+                const currentCode = revealedDigits.join('');
+                if (currentCode === finalCode) {
+                    unlockFeedback.textContent = '';
+                    successModal.classList.remove('hidden');
+                    setTimeout(() => {
+                        successModal.querySelector('div').classList.remove('scale-95', 'opacity-0');
+                    }, 10);
+                    launchConfetti();
+                } else {
+                    unlockFeedback.textContent = 'Solve all the puzzles to get the full code!';
+                }
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                 successModal.querySelector('div').classList.add('scale-95', 'opacity-0');
+                 setTimeout(() => successModal.classList.add('hidden'), 300);
+            });
+        });
+    </script>
+</body>
+</html>
